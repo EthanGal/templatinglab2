@@ -1,41 +1,19 @@
-import java.util.ArrayList;
+import java.util.*;
 
 interface Ingredient {
     String getName();
-    int getQuantity();
+
+    Double getQuantity();
 }
 
 
-class SolidIngredient implements Ingredient{
+class SolidIngredient implements Ingredient {
     private String _name;
-    private int _quantity;
-    public SolidIngredient(String n, int q){
+    private Double _qtyInGrams;
+
+    public SolidIngredient(String n, Double q) {
         _name = n;
-        _quantity = q;
-    }
-
-    @Override
-    public String getName() {
-        return "";
-    }
-
-    @Override
-    public int getQuantity() {
-        return 0;
-    }
-
-    public String toString() {
-        String s = "" + _name + " ";
-        return s;
-    }
-}
-
-class LiquidIngredient implements Ingredient{
-    private String _name;
-    private int _quantity;
-    public LiquidIngredient(String n, int q){
-        _name = n;
-        _quantity = q;
+        _qtyInGrams = q;
     }
 
     @Override
@@ -44,8 +22,8 @@ class LiquidIngredient implements Ingredient{
     }
 
     @Override
-    public int getQuantity() {
-        return _quantity;
+    public Double getQuantity() {
+        return _qtyInGrams;
     }
 
     public String toString() {
@@ -54,37 +32,106 @@ class LiquidIngredient implements Ingredient{
     }
 }
 
-class Recipe<T extends Ingredient>{
+class LiquidIngredient implements Ingredient {
     private String _name;
-    private String _instructions;
-    private ArrayList<T> _setOfIngredients;
-    public Recipe(String n, String i, ArrayList<T> s){
+    private Double _qtyInMl;
+
+    public LiquidIngredient(String n, Double q) {
         _name = n;
-        _instructions = i;
-        _setOfIngredients = s;
+        _qtyInMl = q;
     }
 
-    public void addIngredient(T t){
-        _setOfIngredients.add(t);
+    @Override
+    public String getName() {
+        return _name;
+    }
+
+    @Override
+    public Double getQuantity() {
+        return _qtyInMl;
+    }
+
+    public String toString() {
+        String s = "" + _name + " ";
+        return s;
+    }
+}
+
+class Recipe<T extends Ingredient> {
+    private String _name;
+    private String _instructions;
+    private ArrayList<T> _ingredients;
+
+    public Recipe(String n, String i) {
+        _name = n;
+        _instructions = i;
+        _ingredients = new ArrayList<>();
+    }
+
+    public void addIngredient(T t) {
+        _ingredients.add(t);
     }
 
     public void print() {
-        if (_setOfIngredients != null)
-            System.out.println("Name: " + _name + ", Instructions: " + _instructions + ", Set of Ingredients: " + _setOfIngredients.getClass().getName());
-        else
-            System.out.println("null member variable");
+        System.out.println("Recipe: " + _name);
+        System.out.println("Instructions: " + _instructions);
+        System.out.println("Ingredients: ");
+        for (T t : _ingredients) {
+            System.out.println("- " + t.getName() + ": " + t.getQuantity());
+        }
     }
 }
 
 
-
-
 public class Main {
+    public static void addIngredient(Recipe<Ingredient> recipe, Scanner i){
+        System.out.println("Is this a Solid (s) or Liquid (l)");
+        char type = i.nextLine().charAt(0);
+        System.out.println("Enter ingredient name: ");
+        String name = i.nextLine();
+        System.out.println("Enter the quantity: ");
+        double quantity = Double.parseDouble(i.nextLine());
+        Ingredient ingredient;
+        if (type == 's' || type == 'S' ){
+            ingredient = new SolidIngredient(name, quantity);
+            recipe.addIngredient(ingredient);
+        } else if (type == 'l' || type == 'L') {
+            ingredient = new LiquidIngredient(name, quantity);
+            recipe.addIngredient(ingredient);
+        }
+    }
+
     public static void main(String[] args) {
-        ArrayList<String> aso = new ArrayList<>(2);
-        aso.add("Apple");
-        aso.add("Pear");
-//        Recipe<Ingredient>a = new Recipe<Ingredient>("roro", "Burn", aso);
+        Scanner select = new Scanner(System.in);
+        Scanner i = new Scanner(System.in);
+        System.out.println("Enter recipe name: ");
+        String name = i.nextLine();
+        System.out.println("Enter instructions ");
+        String instructions = i.nextLine();
+        Recipe<Ingredient> r = new Recipe<Ingredient>(name, instructions);
+        int userInput;
+        System.out.println(" Select an option");
+        System.out.println("1: Add Ingredient");
+        System.out.println("2: Print ");
+        System.out.println("3: Quit ");
+        System.out.print("Enter 1-3: ");
+        userInput = select.nextInt();
+        while (userInput != 3) {
+            if (userInput == 1){
+               addIngredient(r, i);
+            } else if (userInput == 2){
+                r.print();
+            } else {
+                System.out.println("Please enter a number that's 1-3.");
+            }
+            System.out.println("1: Add Ingredient");
+            System.out.println("2: Print ");
+            System.out.println("3: Quit ");
+            System.out.print("Enter 1-3: ");
+            userInput = select.nextInt();
+        }
+        System.out.println("Goodbye!");
+
     }
 }//
 
